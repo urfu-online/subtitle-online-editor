@@ -1,6 +1,5 @@
 .react-contextmenu {
     background-color: #fff;
-    background-clip: padding-box;
     border: 1px solid rgba(0, 0, 0, 0.15);
     border-radius: 0.25rem;
     color: #373a3c;
@@ -10,15 +9,15 @@
     outline: none;
     opacity: 0;
     padding: 5px 0;
-    pointer-events: none;
+    pointer-events: none; /* По умолчанию отключены клики */
     text-align: left;
     transition: opacity 250ms ease !important;
+    z-index: 9999 !important; /* Высокий z-index */
 }
 
 .react-contextmenu.react-contextmenu--visible {
     opacity: 1;
-    pointer-events: auto;
-    z-index: 9999;
+    pointer-events: auto; /* Включает клики, когда меню видно */
 }
 
 .react-contextmenu-item {
@@ -38,7 +37,6 @@
     color: #fff;
     background-color: #20a0ff;
     border-color: #20a0ff;
-    text-decoration: none;
 }
 
 .react-contextmenu-item.react-contextmenu-item--disabled,
@@ -54,26 +52,10 @@
     margin-bottom: 3px;
     padding: 2px 0;
 }
-.react-contextmenu-item--divider:hover {
-    background-color: transparent;
-    border-color: rgba(0, 0, 0, 0.15);
-}
-
-.react-contextmenu-item.react-contextmenu-submenu {
-    padding: 0;
-}
-
-.react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item {
-}
 
 .react-contextmenu-item.react-contextmenu-submenu > .react-contextmenu-item:after {
     content: '\25B6';
     display: inline-block;
     position: absolute;
     right: 7px;
-}
-
-.example-multiple-targets::after {
-    content: attr(data-count);
-    display: block;
 }

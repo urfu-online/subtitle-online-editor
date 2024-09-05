@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import NotificationSystem from 'react-notification-system';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import DT from 'duration-time-conversion';
 import isEqual from 'lodash/isEqual';
 import styled from 'styled-components';
@@ -40,7 +41,6 @@ const Style = styled.div`
 
 export default function App({ defaultLang }) {
     const subtitleHistory = useRef([]);
-    const notificationSystem = useRef(null);
     const [player, setPlayer] = useState(null);
     const [loading, setLoading] = useState('');
     const [processing, setProcessing] = useState(0);
@@ -87,12 +87,12 @@ export default function App({ defaultLang }) {
         if (subs) {
             setSubtitle(subs, false);
         }
-    }, [setSubtitle, subtitleHistory]);
+    }, [setSubtitle]);
 
     const clearSubs = useCallback(() => {
         setSubtitle([]);
         subtitleHistory.current.length = 0;
-    }, [setSubtitle, subtitleHistory]);
+    }, [setSubtitle]);
 
     const checkSub = useCallback(
         (sub) => {
@@ -104,24 +104,21 @@ export default function App({ defaultLang }) {
         [subtitle, hasSub],
     );
 
-    const notify = useCallback(
-        (obj) => {
-            // https://github.com/igorprado/react-notification-system
-            const notification = notificationSystem.current;
-            notification.clearNotifications();
-            notification.addNotification({
-                position: 'tc',
-                dismissible: 'none',
-                autoDismiss: 2,
-                message: obj.message,
-                level: obj.level,
-            });
-        },
-        [notificationSystem],
-    );
+    const notify = useCallback((obj) => {
+        // Используем react-toastify для уведомлений
+        toast[obj.level](obj.message, {
+            position: 'top-left',
+            autoClose: 2000,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+    }, []);
 
     const removeSub = useCallback(
         (sub) => {
+            console.log(sub);
+
             const index = hasSub(sub);
             if (index < 0) return;
             const subs = copySubs();
@@ -315,7 +312,7 @@ export default function App({ defaultLang }) {
             <Footer {...props} />
             {loading ? <Loading loading={loading} /> : null}
             {processing > 0 && processing < 100 ? <ProgressBar processing={processing} /> : null}
-            <NotificationSystem ref={notificationSystem} allowHTML={true} />
+            <ToastContainer />
         </Style>
     );
 }

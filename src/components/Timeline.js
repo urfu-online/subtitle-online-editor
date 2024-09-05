@@ -1,5 +1,6 @@
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import React, { useEffect, useCallback } from 'react';
+import { Menu, Item, useContextMenu } from 'react-contexify';
+import 'react-contexify/dist/ReactContexify.css';
 import { Translate } from 'react-i18nify';
 import styled from 'styled-components';
 import isEqual from 'lodash/isEqual';
@@ -19,7 +20,7 @@ const Timeline = styled.div`
 
     .react-contextmenu-wrapper {
         position: absolute;
-        z-index: 9;
+        z-index: 9999 !important;
         top: 0;
         right: 0;
         bottom: 0;
@@ -146,6 +147,10 @@ export default React.memo(
         const currentIndex = currentSubs.findIndex(
             (item) => item.startTime <= currentTime && item.endTime > currentTime,
         );
+
+        const { show } = useContextMenu({
+            id: 'contextmenu',
+        });
 
         const onMouseDown = (sub, event, type) => {
             lastSub = sub;
@@ -286,6 +291,14 @@ export default React.memo(
 
         return (
             <Timeline ref={$blockRef}>
+                <Menu id="contextmenu">
+                    <Item onClick={() => removeSub(lastSub)}>
+                        <Translate value="DELETE" />
+                    </Item>
+                    <Item onClick={() => mergeSub(lastSub)}>
+                        <Translate value="MERGE" />
+                    </Item>
+                </Menu>
                 <div ref={$subsRef}>
                     {currentSubs.map((sub, key) => {
                         return (
@@ -302,6 +315,7 @@ export default React.memo(
                                     left: render.padding * gridGap + (sub.startTime - render.beginTime) * gridGap * 10,
                                     width: (sub.endTime - sub.startTime) * gridGap * 10,
                                 }}
+                                onContextMenu={(event) => show({ event: event, id: 'contextmenu' })}
                                 onClick={() => {
                                     if (player.duration >= sub.startTime) {
                                         player.currentTime = sub.startTime + 0.001;
@@ -309,48 +323,38 @@ export default React.memo(
                                 }}
                                 onDoubleClick={(event) => onDoubleClick(sub, event)}
                             >
-                                <ContextMenuTrigger id="contextmenu" holdToDisplay={-1}>
-                                    <div
-                                        className="sub-handle"
-                                        style={{
-                                            left: 0,
-                                            width: 10,
-                                        }}
-                                        onMouseDown={(event) => onMouseDown(sub, event, 'left')}
-                                    ></div>
+                                <div
+                                    className="sub-handle"
+                                    style={{
+                                        left: 0,
+                                        width: 10,
+                                    }}
+                                    onMouseDown={(event) => onMouseDown(sub, event, 'left')}
+                                ></div>
 
-                                    <div
-                                        className="sub-text"
-                                        title={sub.text}
-                                        onMouseDown={(event) => onMouseDown(sub, event)}
-                                    >
-                                        {`${sub.text}`.split(/\r?\n/).map((line, index) => (
-                                            <p key={index}>{line}</p>
-                                        ))}
-                                    </div>
+                                <div
+                                    className="sub-text"
+                                    title={sub.text}
+                                    onMouseDown={(event) => onMouseDown(sub, event)}
+                                >
+                                    {`${sub.text}`.split(/\r?\n/).map((line, index) => (
+                                        <p key={index}>{line}</p>
+                                    ))}
+                                </div>
 
-                                    <div
-                                        className="sub-handle"
-                                        style={{
-                                            right: 0,
-                                            width: 10,
-                                        }}
-                                        onMouseDown={(event) => onMouseDown(sub, event, 'right')}
-                                    ></div>
-                                    <div className="sub-duration">{sub.duration}</div>
-                                </ContextMenuTrigger>
+                                <div
+                                    className="sub-handle"
+                                    style={{
+                                        right: 0,
+                                        width: 10,
+                                    }}
+                                    onMouseDown={(event) => onMouseDown(sub, event, 'right')}
+                                ></div>
+                                <div className="sub-duration">{sub.duration}</div>
                             </div>
                         );
                     })}
                 </div>
-                <ContextMenu id="contextmenu">
-                    <MenuItem onClick={() => removeSub(lastSub)}>
-                        <Translate value="DELETE" />
-                    </MenuItem>
-                    <MenuItem onClick={() => mergeSub(lastSub)}>
-                        <Translate value="MERGE" />
-                    </MenuItem>
-                </ContextMenu>
             </Timeline>
         );
     },

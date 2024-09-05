@@ -6,7 +6,8 @@ import { getExt, download } from '../utils';
 import { file2sub, sub2vtt, sub2srt, sub2txt } from '../libs/readSub';
 import sub2ass from '../libs/readSub/sub2ass';
 import googleTranslate from '../libs/googleTranslate';
-import FFmpeg from '@ffmpeg/ffmpeg';
+// import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import SimpleFS from '@forlagshuset/simple-fs';
 
 const Style = styled.div`
@@ -237,7 +238,7 @@ const Style = styled.div`
     }
 `;
 
-FFmpeg.createFFmpeg({ log: true }).load();
+createFFmpeg({ log: true }).load();
 const fs = new SimpleFS.FileSystem();
 
 export default function Header({
@@ -254,13 +255,13 @@ export default function Header({
     setProcessing,
     notify,
 }) {
-    const [translate, setTranslate] = useState('en');
+    const [translate, setTranslate] = useState('ru');
     const [videoFile, setVideoFile] = useState(null);
 
     const decodeAudioData = useCallback(
         async (file) => {
             try {
-                const { createFFmpeg, fetchFile } = FFmpeg;
+                // const { createFFmpeg, fetchFile } = FFmpeg;
                 const ffmpeg = createFFmpeg({ log: true });
                 ffmpeg.setProgress(({ ratio }) => setProcessing(ratio * 100));
                 setLoading(t('LOADING_FFMPEG'));
@@ -297,7 +298,7 @@ export default function Header({
 
     const burnSubtitles = useCallback(async () => {
         try {
-            const { createFFmpeg, fetchFile } = FFmpeg;
+            // const { createFFmpeg, fetchFile } = FFmpeg;
             const ffmpeg = createFFmpeg({ log: true });
             ffmpeg.setProgress(({ ratio }) => setProcessing(ratio * 100));
             setLoading(t('LOADING_FFMPEG'));
@@ -539,12 +540,6 @@ export default function Header({
                         <Translate value="HOTKEY_02" />
                     </span>
                 </div>
-            </div>
-            <div className="bottom">
-                <a href="https://online.aimu-app.com/">
-                    <div className="title">全新字幕编辑器来了，点击这里体验</div>
-                    <img src="/aimu.png" alt="aimu" />
-                </a>
             </div>
         </Style>
     );
