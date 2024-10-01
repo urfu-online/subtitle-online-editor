@@ -1,0 +1,9 @@
+services:
+    client:
+        container_name: subtitle-editor-client
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"
+        restart: always
